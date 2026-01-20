@@ -1,58 +1,107 @@
 'use client'
 import Link from 'next/link'
-import { usePathname } from 'next/navigation'
-import { LayoutDashboard, Users, DollarSign, LogOut, Settings } from 'lucide-react'
+import { usePathname, useRouter } from 'next/navigation'
+import { LayoutDashboard, Users, DollarSign, AlertTriangle, LogOut } from 'lucide-react'
+import { supabase } from '@/lib/supabase'
+import Image from 'next/image'
 
 export function Sidebar() {
   const pathname = usePathname()
+  const router = useRouter()
 
-  // Função auxiliar para saber se o link está ativo
-  const isActive = (path: string) => pathname === path
-
+  // Lista dos menus para facilitar a manutenção
   const menuItems = [
-    { label: 'Visão Geral', icon: LayoutDashboard, path: '/admin' },
-    { label: 'Alunos & Matrículas', icon: Users, path: '/admin/alunos' },
-    { label: 'Financeiro', icon: DollarSign, path: '/admin/financeiro' },
+    { 
+      name: 'Painel Geral', 
+      href: '/admin', 
+      icon: LayoutDashboard 
+    },
+    { 
+      name: 'Alunos & Matrículas', 
+      href: '/admin/alunos', 
+      icon: Users 
+    },
+    { 
+      name: 'Financeiro', 
+      href: '/admin/financeiro', 
+      icon: DollarSign 
+    },
+    { 
+      name: 'Inadimplência', 
+      href: '/admin/inadimplentes', 
+      icon: AlertTriangle,
+      destaque: true // Vamos dar uma cor diferente para esse?
+    },
   ]
 
+  async function handleLogout() {
+    await supabase.auth.signOut()
+    router.push('/login')
+  }
+
   return (
-    <aside className="w-64 bg-slate-900 h-screen text-slate-300 flex flex-col fixed left-0 top-0">
-      {/* Logo da Escola */}
-      <div className="p-6 border-b border-slate-800 flex items-center gap-2">
-        <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center font-bold text-white">
-          CG
+    <aside className="w-64 bg-white border-r border-slate-200 h-screen fixed left-0 top-0 flex flex-col z-10">
+      
+      {/* 1. Logo da Escola */}
+      <div className="h-24 flex items-center justify-center border-b border-slate-100">
+        <div className="relative w-32 h-16">
+            {/* Certifique-se de que o arquivo 'logo.png' está na pasta public */}
+            <Image 
+              src="/logo.png" 
+              alt="Logo CGD" 
+              fill
+              className="object-contain"
+              priority
+            />
         </div>
-        <span className="text-white font-bold text-lg tracking-wide">CGD Ágape</span>
       </div>
 
-      {/* Menu de Navegação */}
-      <nav className="flex-1 p-4 space-y-2">
-        {menuItems.map((item) => (
-          <Link 
-            key={item.path} 
-            href={item.path}
-            className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-all ${
-              isActive(item.path) 
-                ? 'bg-blue-600 text-white shadow-lg shadow-blue-900/20' 
-                : 'hover:bg-slate-800 hover:text-white'
-            }`}
-          >
-            <item.icon size={20} />
-            <span className="font-medium text-sm">{item.label}</span>
-          </Link>
-        ))}
+      {/* 2. Navegação */}
+      <nav className="flex-1 p-4 space-y-2 overflow-y-auto">
+        <p className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-4 ml-2">
+          Gestão Escolar
+        </p>
+
+        {menuItems.map((item) => {
+          const isActive = pathname === item.href
+          
+          return (
+            <Link 
+              key={item.href} 
+              href={item.href}
+              className={`
+                flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200 font-medium
+                ${isActive 
+                  ? 'bg-blue-50 text-blue-700 shadow-sm' 
+                  : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
+                }
+                ${item.destaque && !isActive ? 'text-slate-600 hover:text-red-600 hover:bg-red-50' : ''}
+              `}
+            >
+              <item.icon 
+                size={20} 
+                className={`
+                  ${isActive ? 'text-blue-600' : 'text-slate-400'}
+                  ${item.destaque && !isActive ? 'group-hover:text-red-500' : ''}
+                `} 
+              />
+              {item.name}
+            </Link>
+          )
+        })}
       </nav>
 
-      {/* Rodapé do Menu */}
-      <div className="p-4 border-t border-slate-800 space-y-1">
-        <button className="flex items-center gap-3 px-4 py-3 w-full text-left rounded-lg hover:bg-slate-800 hover:text-red-400 transition text-slate-400">
+      {/* 3. Rodapé (Usuário e Sair) */}
+      <div className="p-4 border-t border-slate-100">
+        <button 
+          onClick={handleLogout}
+          className="flex items-center gap-3 w-full px-4 py-3 text-slate-500 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors font-medium"
+        >
           <LogOut size={20} />
-          <span className="font-medium text-sm">Sair do Sistema</span>
+          Sair do Sistema
         </button>
-        <div className="text-xs text-center text-slate-600 pt-4">
-          v1.0.0 - DigitalRise
-        </div>
       </div>
+
     </aside>
   )
 }

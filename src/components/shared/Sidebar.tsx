@@ -1,7 +1,8 @@
 'use client'
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
-import { LayoutDashboard, Users, DollarSign, AlertTriangle, LogOut } from 'lucide-react'
+// ADICIONEI O TrendingDown AQUI NESSA LINHA DEBAIXO 👇
+import { LayoutDashboard, Users, DollarSign, AlertTriangle, LogOut, TrendingDown } from 'lucide-react'
 import { supabase } from '@/lib/supabase'
 import Image from 'next/image'
 
@@ -9,7 +10,7 @@ export function Sidebar() {
   const pathname = usePathname()
   const router = useRouter()
 
-  // Lista dos menus para facilitar a manutenção
+  // Lista dos menus atualizada
   const menuItems = [
     { 
       name: 'Painel Geral', 
@@ -22,15 +23,20 @@ export function Sidebar() {
       icon: Users 
     },
     { 
-      name: 'Financeiro', 
+      name: 'Financeiro (Entradas)', 
       href: '/admin/financeiro', 
       icon: DollarSign 
+    },
+    { 
+      name: 'Despesas (Saídas)', 
+      href: '/admin/despesas', 
+      icon: TrendingDown 
     },
     { 
       name: 'Inadimplência', 
       href: '/admin/inadimplentes', 
       icon: AlertTriangle,
-      destaque: true // Vamos dar uma cor diferente para esse?
+      destaque: true 
     },
   ]
 
@@ -45,7 +51,6 @@ export function Sidebar() {
       {/* 1. Logo da Escola */}
       <div className="h-24 flex items-center justify-center border-b border-slate-100">
         <div className="relative w-32 h-16">
-            {/* Certifique-se de que o arquivo 'logo.png' está na pasta public */}
             <Image 
               src="/logo.png" 
               alt="Logo CGD" 

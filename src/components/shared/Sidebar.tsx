@@ -1,8 +1,16 @@
 'use client'
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
-// ADICIONEI O TrendingDown AQUI NESSA LINHA DEBAIXO 👇
-import { LayoutDashboard, Users, DollarSign, AlertTriangle, LogOut, TrendingDown } from 'lucide-react'
+import { 
+  LayoutDashboard, 
+  Users, 
+  DollarSign, 
+  AlertTriangle, 
+  LogOut, 
+  TrendingDown, 
+  GraduationCap,
+  Megaphone // Importado para o Mural de Avisos
+} from 'lucide-react'
 import { supabase } from '@/lib/supabase'
 import Image from 'next/image'
 
@@ -21,6 +29,16 @@ export function Sidebar() {
       name: 'Alunos & Matrículas', 
       href: '/admin/alunos', 
       icon: Users 
+    },
+    { 
+      name: 'Pedagógico (Notas)', 
+      href: '/admin/pedagogico', 
+      icon: GraduationCap 
+    },
+    { 
+      name: 'Mural de Avisos', // Novo item adicionado aqui
+      href: '/admin/avisos', 
+      icon: Megaphone 
     },
     { 
       name: 'Financeiro (Entradas)', 
@@ -63,7 +81,7 @@ export function Sidebar() {
 
       {/* 2. Navegação */}
       <nav className="flex-1 p-4 space-y-2 overflow-y-auto">
-        <p className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-4 ml-2">
+        <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-4 ml-2">
           Gestão Escolar
         </p>
 
@@ -75,16 +93,16 @@ export function Sidebar() {
               key={item.href} 
               href={item.href}
               className={`
-                flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200 font-medium
+                flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 font-bold text-sm
                 ${isActive 
                   ? 'bg-blue-50 text-blue-700 shadow-sm' 
-                  : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
+                  : 'text-slate-500 hover:bg-slate-50 hover:text-slate-900'
                 }
-                ${item.destaque && !isActive ? 'text-slate-600 hover:text-red-600 hover:bg-red-50' : ''}
+                ${item.destaque && !isActive ? 'text-slate-500 hover:text-red-600 hover:bg-red-50' : ''}
               `}
             >
               <item.icon 
-                size={20} 
+                size={18} 
                 className={`
                   ${isActive ? 'text-blue-600' : 'text-slate-400'}
                   ${item.destaque && !isActive ? 'group-hover:text-red-500' : ''}
@@ -100,9 +118,9 @@ export function Sidebar() {
       <div className="p-4 border-t border-slate-100">
         <button 
           onClick={handleLogout}
-          className="flex items-center gap-3 w-full px-4 py-3 text-slate-500 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors font-medium"
+          className="flex items-center gap-3 w-full px-4 py-3 text-slate-500 hover:text-red-600 hover:bg-red-50 rounded-xl transition-colors font-bold text-sm"
         >
-          <LogOut size={20} />
+          <LogOut size={18} />
           Sair do Sistema
         </button>
       </div>

@@ -64,9 +64,16 @@ export default function PortalDashboard() {
       const alunoId = localStorage.getItem('@CGDAgape:alunoId')
       if (!alunoId) { router.push('/portal'); return }
 
+      // 1. Dados do Aluno
       const { data: dataAluno } = await supabase.from('alunos').select('nome_completo, turma').eq('id', alunoId).single()
+      
+      // 2. Financeiro
       const { data: dataFin } = await supabase.from('cobrancas').select('*').eq('aluno_id', alunoId).order('data_vencimento', { ascending: false })
-      const { data: dataNotas } = await supabase.from('notas').select('*').eq('id_aluno', alunoId).order('unidade', { ascending: true })
+      
+      // 3. Notas (CORREÇÃO: alterado de id_aluno para aluno_id)
+      const { data: dataNotas } = await supabase.from('notas').select('*').eq('aluno_id', alunoId).order('unidade', { ascending: true })
+      
+      // 4. Comunicados
       const { data: dataAvisos } = await supabase.from('avisos').select('*').order('created_at', { ascending: false }).limit(3)
 
       if (dataAluno) setAluno(dataAluno)
@@ -96,11 +103,11 @@ export default function PortalDashboard() {
   return (
     <div className="min-h-screen bg-slate-50 pb-20 font-sans text-slate-900 overflow-x-hidden">
       
-      {/* HEADER - Sticky com Glassmorphism */}
+      {/* HEADER */}
       <header className="bg-white/80 backdrop-blur-md border-b border-slate-100 sticky top-0 z-30 shadow-sm animate-in fade-in slide-in-from-top-4 duration-500">
         <div className="max-w-6xl mx-auto px-4 md:px-6 h-16 md:h-20 flex items-center justify-between">
           <div className="relative w-24 md:w-32 h-8 md:h-10 hover:scale-105 transition-transform cursor-pointer">
-            <Image src="/logo.png" alt="Logo CGD" fill className="object-contain" />
+            <Image src="/logo.png" alt="Logo" fill className="object-contain" />
           </div>
           <button onClick={handleLogout} className="flex items-center gap-2 text-slate-400 hover:text-red-500 transition-all text-[10px] md:text-xs font-black uppercase tracking-widest active:scale-95">
             <span className="hidden sm:inline">Sair do Portal</span> <LogOut size={16} />
@@ -110,7 +117,7 @@ export default function PortalDashboard() {
 
       <main className="max-w-6xl mx-auto px-4 md:px-6 mt-6 md:mt-8 space-y-6 md:space-y-10">
         
-        {/* BANNER DE BOAS-VINDAS - Animação de Zoom e Slide */}
+        {/* BANNER DE BOAS-VINDAS */}
         <section className="bg-gradient-to-br from-blue-600 to-indigo-700 rounded-3xl md:rounded-[2.5rem] p-6 md:p-10 text-white shadow-xl shadow-blue-200/50 relative overflow-hidden animate-in fade-in zoom-in-95 duration-700">
           <div className="absolute top-0 right-0 p-4 opacity-10 rotate-12">
             <GraduationCap size={120} className="md:w-[200px] md:h-[200px]" />
@@ -135,7 +142,7 @@ export default function PortalDashboard() {
           
           <div className="lg:col-span-2 space-y-10">
             
-            {/* FINANCEIRO - Cards com Hover e Entrada em Cascata */}
+            {/* FINANCEIRO */}
             <div className="space-y-5 animate-in fade-in slide-in-from-bottom-6 duration-700 delay-200">
               <h2 className="text-xl md:text-2xl font-black text-slate-800 flex items-center gap-3">
                 <CreditCard className="text-blue-500" size={24} /> Mensalidades e Taxas
@@ -185,7 +192,7 @@ export default function PortalDashboard() {
               </div>
             </div>
 
-            {/* BOLETIM - Efeito de Tabela Profissional */}
+            {/* BOLETIM */}
             <div className="space-y-5 animate-in fade-in slide-in-from-bottom-8 duration-700 delay-300">
               <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 pr-2">
                 <h2 className="text-xl md:text-2xl font-black text-slate-800 flex items-center gap-3">
@@ -241,7 +248,7 @@ export default function PortalDashboard() {
             </div>
           </div>
 
-          {/* COLUNA DIREITA (MURAL) - Entrada pela Direita */}
+          {/* COLUNA DIREITA (MURAL) */}
           <div className="space-y-6 md:space-y-8 animate-in fade-in slide-in-from-right-8 duration-700 delay-400">
             <h2 className="text-xl md:text-2xl font-black text-slate-800 flex items-center gap-3">
               <Megaphone className="text-orange-500" size={24} /> Mural de Avisos
@@ -263,7 +270,7 @@ export default function PortalDashboard() {
               {avisos.length === 0 && <p className="text-center py-10 text-slate-300 font-bold uppercase text-[10px]">Sem avisos hoje.</p>}
             </div>
 
-            {/* CARD AJUDA - Dark Mode Style */}
+            {/* CARD AJUDA */}
             <div className="bg-slate-900 p-8 rounded-3xl text-white space-y-4 shadow-2xl animate-in fade-in slide-in-from-bottom-4 duration-700 delay-700">
               <h3 className="font-black text-xl tracking-tight">Precisa de Ajuda?</h3>
               <p className="text-xs text-slate-400 leading-relaxed font-medium">
@@ -274,7 +281,6 @@ export default function PortalDashboard() {
               </button>
             </div>
           </div>
-
         </div>
       </main>
     </div>
